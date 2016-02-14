@@ -1,0 +1,33 @@
+{
+  "name": "drt",
+  "version": "0.0.1",
+  "description": "A javascript dependency resolution and build tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "bin/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffreyhunter77/drt.git"
+  },
+  "keywords": [
+    "dependency",
+    "build",
+    "make"
+  ],
+  "author": "Jeffrey Hunter <jeff@missioncriticallabs.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeffreyhunter77/drt/issues"
+  },
+  "homepage": "https://github.com/jeffreyhunter77/drt",
+  "devDependencies": {
+    "mocha": "2.4.5",
+    "mock-fs": "3.7.0",
+    "sinon": "1.17.3"
+  },
+  "dependencies": {
+    "lodash": "4.3.0",
+    "q": "1.4.1"
+  }
+}

@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Copyright (c) 2015 Jeffrey Hunter
+#
+# Distributed under the MIT license. See the LICENSE file distributed
+# with this work for details and restrictions.
+#
+
+if [ -z "$MOCHA" ]
+then
+  MOCHA=`node -e 'var path = require("path"); console.log(path.join(path.dirname(require.resolve("mocha")), "bin", "mocha"));'`
+fi
+
+UNIT_TEST_DIR=`dirname $0`/../tests/unit
+
+$MOCHA "$@" "$UNIT_TEST_DIR"
