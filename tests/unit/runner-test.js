@@ -61,6 +61,16 @@ describe('Runner', function() {
           assert(Builder.prototype.build.calledWith('greet'));
         });
       });
+      
+      it('builds all targets if multiple are given', function() {
+        var runner = new Runner('test.drt', ['greet', 'all']);
+
+        return runner.run().then(function() {
+          assert(Builder.prototype.build.calledTwice);
+          assert(Builder.prototype.build.firstCall.calledWith('greet'));
+          assert(Builder.prototype.build.secondCall.calledWith('all'));
+        });
+      });
 
       it('builds the first target in the file if none is given', function() {
         var runner = new Runner('test.drt');

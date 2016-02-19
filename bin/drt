@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+var drt = require('../')
+  , Commander = require('commander')
+  , fs = require('fs')
+  , path = require('path')
+;
+
+function version() {
+  try {
+    return JSON.parse(
+      fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+    ).version
+  } catch (e) {
+    return 'undefined';
+  }
+}
+
+var program = new Commander.Command()
+  .version(version())
+  .option('-f, --file <filename>', 'specify the file to evaluate in place of build.drt')
+  .parse(process.argv)
+;
+
+var drtFile = program.file;
+var targets = program.args;
+var vars = {};
+
+var runner = new drt.Runner(drtFile, targets, vars);
+
+runner
+  .run()
+  .catch(function(e) {
+    console.error("\nError: %s\n", e.message);
+    process.exit(1);
+  })
+  .done()
+;

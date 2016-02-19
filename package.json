@@ -27,6 +27,7 @@
     "sinon": "1.17.3"
   },
   "dependencies": {
+    "commander": "2.9.0",
     "lodash": "4.3.0",
     "q": "1.4.1"
   }
