@@ -252,6 +252,46 @@ describe("Builder", function() {
             });
         });
       });
+
+      context("script variable assignment", function() {
+        beforeEach(function() {
+          formula = {
+            targetA: {
+            },
+
+            targetB: {
+              dependsOn: 'targetA'
+            },
+          };
+
+          builder = new Builder(formula);
+        });
+
+        it("sets the 'target' variable to the current target name", function() {
+          formula.targetA.commands = function() {
+            assert.equal(this.target, 'targetA');
+          }
+
+          return builder.build('targetA');
+        });
+
+        it("sets the 'prerequisites' variable to the list of dependencies", function() {
+          formula.targetB.commands = function() {
+            assert.deepEqual(this.prerequisites, ['targetA']);
+          }
+
+          return builder.build('targetB');
+        });
+
+        it("sets the 'prerequisites' variable to an empty array when there are none", function(){
+          formula.targetA.commands = function() {
+            assert.deepEqual(this.prerequisites, []);
+          }
+
+          return builder.build('targetA');
+        });
+      });
+
     });
 
   });
