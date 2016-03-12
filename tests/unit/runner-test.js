@@ -170,6 +170,68 @@ describe('Runner', function() {
         });
       });
     });
+
+    describe("global definitions", function() {
+      beforeEach(function() {
+        var defaultRules = "rules = {all: {commands: 'echo hello'}};";
+
+        var buildDrt = "drt.include_path = ['.', 'a', 'b'];\n" +
+                       "\n" +
+                       "include('name.drt');\n" +
+                       "\n" +
+                       "if (name !== 'A')\n" +
+                       "  throw new Error('name is not equal to A');\n" +
+                       "\n" +
+                       defaultRules;
+
+        var aName = "name = 'A';";
+        var bName = "name = 'B';";
+
+        var badInclude = "include('noSuchFile.drt');" + defaultRules;
+
+        var circleInclude = "include('loop.drt');" + defaultRules;
+        var loop          = "include('circle.drt');";
+
+        mockfs({
+          'badInclude.drt': badInclude,
+          'build.drt': buildDrt,
+          'a/name.drt': aName,
+          'b/name.drt': bName,
+          'circle.drt': circleInclude,
+          'loop.drt': loop
+        });
+
+        Builder.prototype.build = sinon.stub().returns(Q());
+      });
+
+      afterEach(function() {
+        mockfs.restore();
+        Builder.prototype.build = build;
+      });
+
+      describe("include()", function() {
+        it("evaluates the first file found in drt.include_path in the current context", function() {
+          var runner = new Runner();
+          return runner.run()
+        });
+
+        it("throws an error if no file is found", function() {
+          var runner = new Runner('badInclude.drt');
+
+          return runner.run().then(function() {
+            assert.fail(null, Error, "missing include did not generate an error");
+          }).
+          catch(function(err) {
+            assert(/File not found/.test(err.message), "Unexpected error: "+err.message);
+          });
+        });
+
+        it("allows circular references", function() {
+          var runner = new Runner('circle.drt');
+          return runner.run()
+        });
+      });
+    });
   });
 
 });
