@@ -6,6 +6,9 @@
   "scripts": {
     "test": "bin/test"
   },
+  "bin": {
+    "drt": "bin/drt"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jeffreyhunter77/drt.git"
