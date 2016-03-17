@@ -3,12 +3,15 @@ var assert = require('assert')
   , child_process = require('child_process')
   , Evaluator = require('../../lib/evaluator')
   , Q = require('q')
+  , util = require('util')
 ;
 
 var exec = child_process.exec;
 var anError = new Error("An error!");
 var evalContext;
 var evaluator;
+var log = console.log;
+var logs;
 
 describe("Evaluator", function() {
 
@@ -105,6 +108,36 @@ describe("Evaluator", function() {
 
     });
 
+  });
+
+  describe("constructor options", function() {
+    describe("echo", function() {
+
+      beforeEach(function() {
+        child_process.exec = sinon.stub();
+        child_process.exec.callsArg(2);
+
+        logs = [];
+        console.log = function() { logs.push(util.format.apply(util, arguments)); }
+      });
+
+      afterEach(function() {
+        child_process.exec = exec;
+        console.log = log;
+      });
+
+      it("echoes executed commands when true", function() {
+        evaluator = new Evaluator({}, {echo: true});
+        evaluator.evaluate("echo ok");
+        assert.deepEqual(logs, ["echo ok"]);
+      });
+
+      it("does not execute commands when false", function() {
+        evaluator = new Evaluator({}, {echo: false});
+        evaluator.evaluate("echo ok");
+        assert.deepEqual(logs, []);
+      });
+    });
   });
 
 });

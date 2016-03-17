@@ -18,14 +18,19 @@ function version() {
 var program = new Commander.Command()
   .version(version())
   .option('-f, --file <filename>', 'specify the file to evaluate in place of build.drt')
+  .option('--echo',                'echo all commands before executing them')
   .parse(process.argv)
 ;
 
 var drtFile = program.file;
 var targets = program.args;
 var vars = {};
+var opts = {};
 
-var runner = new drt.Runner(drtFile, targets, vars);
+if (program.echo)
+  opts.echo = true;
+
+var runner = new drt.Runner(drtFile, targets, vars, opts);
 
 runner
   .run()

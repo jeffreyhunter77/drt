@@ -56,27 +56,32 @@ describe('drt', function() {
   context('called with no arguments', function() {
     it('runs the default script and target', function() {
       runScript([]);
-      assertRunnerCalledWith(null, [], {});
+      assertRunnerCalledWith(null, [], {}, {});
     });
   });
 
   context('called with one or more arguments', function() {
     it('accepts the arguments as target names', function() {
       runScript(['one', 'two', 'three']);
-      assertRunnerCalledWith(null, ['one', 'two', 'three'], {});
+      assertRunnerCalledWith(null, ['one', 'two', 'three'], {}, {});
     });
   });
 
   context('command line options', function() {
     it('-f filename specifies the script to load in place of the default', function() {
       runScript(['-f', 'test.drt']);
-      assertRunnerCalledWith('test.drt', [], {});
+      assertRunnerCalledWith('test.drt', [], {}, {});
     });
 
     it('--file=filename specifies the script to load in place of the default', function() {
       runScript(['--file=test.drt']);
-      assertRunnerCalledWith('test.drt', [], {});
+      assertRunnerCalledWith('test.drt', [], {}, {});
     });
+
+    it('--echo turns on command echoing', function() {
+      runScript(['--echo']);
+      assertRunnerCalledWith(undefined, [], {}, {echo: true});
+    })
   });
 
 });
