@@ -19,6 +19,7 @@ var program = new Commander.Command()
   .version(version())
   .option('-f, --file <filename>', 'specify the file to evaluate in place of build.drt')
   .option('--echo',                'echo all commands before executing them')
+  .option('-d, --debug',           'turn on debugging information')
   .parse(process.argv)
 ;
 
@@ -29,6 +30,8 @@ var opts = {};
 
 if (program.echo)
   opts.echo = true;
+if (program.debug)
+  opts.debug = true;
 
 var runner = new drt.Runner(drtFile, targets, vars, opts);
 

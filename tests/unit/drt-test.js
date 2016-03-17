@@ -82,6 +82,16 @@ describe('drt', function() {
       runScript(['--echo']);
       assertRunnerCalledWith(undefined, [], {}, {echo: true});
     })
+
+    it('-d turns on debugging', function() {
+      runScript(['-d']);
+      assertRunnerCalledWith(undefined, [], {}, {debug: true});
+    })
+
+    it('--debug turns on debugging', function() {
+      runScript(['--debug']);
+      assertRunnerCalledWith(undefined, [], {}, {debug: true});
+    })
   });
 
 });
