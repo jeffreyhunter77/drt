@@ -10,6 +10,7 @@ var anError = new Error("An error!");
 var builder;
 var formula;
 var now = new Date();
+var oneMinuteAgo = new Date(now.getTime() - (60 * 1000));
 
 describe("Builder", function() {
 
@@ -213,7 +214,6 @@ describe("Builder", function() {
 
       context("all dependencies and the target are up to date", function() {
         beforeEach(function() {
-          var now = new Date();
           mockfs.restore(); // start from scratch
           mockfs({
             'targetB': mockfs.file({content: '', mtime: now}),
@@ -225,6 +225,62 @@ describe("Builder", function() {
           return builder.build('targetC').
             then(function() {
               assert(!child_process.exec.called)
+            });
+        });
+
+        it("returns the newest modification time", function() {
+          return builder.build('targetC')
+            .then(function(mtime) {
+              assert.strictEqual(mtime, now);
+            });
+        });
+      });
+
+      context("shared dependencies newer than the target", function() {
+        beforeEach(function() {
+          formula = {
+            all: {
+              dependsOn: ['objectA', 'objectB']
+            },
+
+            objectA: {
+              dependsOn: 'srcA',
+              commands: 'touch objectA'
+            },
+
+            objectB: {
+              dependsOn: 'srcB',
+              commands: 'touch objectB'
+            },
+
+            srcA: {
+              dependsOn: ['headerA', 'headerB']
+            },
+
+            srcB: {
+              dependsOn: ['headerA', 'headerB']
+            }
+          };
+
+          builder = new Builder(formula);
+
+          mockfs.restore(); // start from scratch
+          mockfs({
+            'headerA': mockfs.file({content: '', mtime: now}),
+            'headerB': mockfs.file({content: '', mtime: oneMinuteAgo}),
+            'srcA':    mockfs.file({content: '', mtime: oneMinuteAgo}),
+            'srcB':    mockfs.file({content: '', mtime: oneMinuteAgo}),
+            'objectA': mockfs.file({content: '', mtime: oneMinuteAgo}),
+            'objectB': mockfs.file({content: '', mtime: oneMinuteAgo})
+          });
+        });
+
+        it("builds all affected dependents", function() {
+          return builder.build('all').
+            then(function() {
+              assert.equal(child_process.exec.callCount, 2)
+              assert(child_process.exec.firstCall.calledWith("touch objectA"));
+              assert(child_process.exec.secondCall.calledWith("touch objectB"));
             });
         });
       });
