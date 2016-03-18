@@ -81,6 +81,15 @@ describe('Runner', function() {
         });
       });
 
+      it('builds the first target in the file if an empty array is given', function() {
+        var runner = new Runner('test.drt', []);
+
+        return runner.run().then(function() {
+          assert(Builder.prototype.build.calledOnce);
+          assert(Builder.prototype.build.calledWith('all'));
+        });
+      });
+
       it('throws an error if called without a target and the file does not define any targets', function() {
         var runner = new Runner('empty.drt');
 
